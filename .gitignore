@@ -34,6 +34,10 @@ output/*
 logs/*
 !logs/.gitkeep
 
+# Cache (keep directory, ignore contents)
+cache/*
+!cache/.gitkeep
+
 # IDE
 .idea/
 .vscode/

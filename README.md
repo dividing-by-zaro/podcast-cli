@@ -9,6 +9,7 @@ A CLI tool that generates text-to-speech podcasts from Wikipedia articles.
 - Automatic chunking for long articles
 - Cost estimation and balance checking
 - Usage logging to track API costs
+- Caching of preprocessed articles for separate TTS generation
 
 ## Requirements
 
@@ -49,6 +50,15 @@ uv run python -m src.main "Cornbread" -o output/my_podcast.mp3
 
 # View usage/cost report
 uv run python -m src.main --usage
+
+# Cache preprocessed article (no TTS)
+uv run python -m src.main "Cornbread" --cache-only
+
+# List cached topics
+uv run python -m src.main --list-cache
+
+# Generate audio from cache
+uv run python -m src.main "Cornbread" --from-cache
 ```
 
 ## Configuration
@@ -70,10 +80,12 @@ podcast-cli/
 │   ├── text_processor.py   # OpenAI preprocessing
 │   ├── tts_client.py       # ElevenLabs TTS
 │   ├── audio_utils.py      # Audio handling
+│   ├── cache.py            # Article caching
 │   └── usage_logger.py     # API cost tracking
 ├── tests/                  # Test suite
 ├── output/                 # Generated audio files
-└── logs/                   # Usage logs (gitignored)
+├── cache/                  # Cached preprocessed articles
+└── logs/                   # Usage logs
 ```
 
 ## License

@@ -21,6 +21,9 @@ ELEVENLABS_MODEL_ID = "eleven_monolingual_v1"
 OUTPUT_DIR = Path(__file__).parent.parent / "output"
 AUDIO_FORMAT = "mp3"
 
+# Cache settings
+CACHE_DIR = Path(__file__).parent.parent / "cache"
+
 # Text processing settings
 PREVIEW_CHAR_COUNT = 500  # Characters for preview generation
 CHUNK_SIZE = 5000  # Max characters per TTS request
