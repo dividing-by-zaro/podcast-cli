@@ -13,10 +13,15 @@ def get_wikipedia_client() -> wikipediaapi.Wikipedia:
     )
 
 
+def normalize_topic(topic: str) -> str:
+    """Normalize topic case to match Wikipedia title format."""
+    return topic.title()
+
+
 def page_exists(topic: str) -> bool:
     """Check if a Wikipedia page exists for the given topic."""
     wiki = get_wikipedia_client()
-    page = wiki.page(topic)
+    page = wiki.page(normalize_topic(topic))
     return page.exists()
 
 
@@ -34,7 +39,8 @@ def get_page_content(topic: str) -> str:
         ValueError: If the page does not exist.
     """
     wiki = get_wikipedia_client()
-    page = wiki.page(topic)
+    normalized = normalize_topic(topic)
+    page = wiki.page(normalized)
 
     if not page.exists():
         raise ValueError(f"Wikipedia page '{topic}' does not exist.")
@@ -56,7 +62,8 @@ def get_page_summary(topic: str) -> str:
         ValueError: If the page does not exist.
     """
     wiki = get_wikipedia_client()
-    page = wiki.page(topic)
+    normalized = normalize_topic(topic)
+    page = wiki.page(normalized)
 
     if not page.exists():
         raise ValueError(f"Wikipedia page '{topic}' does not exist.")

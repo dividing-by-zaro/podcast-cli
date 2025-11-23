@@ -19,7 +19,7 @@ def get_account_balance() -> float:
         The number of characters remaining in the account.
     """
     client = get_elevenlabs_client()
-    subscription = client.user.get_subscription()
+    subscription = client.user.subscription.get()
     return subscription.character_limit - subscription.character_count
 
 

@@ -5,7 +5,9 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
+# Load .env from project root (parent of src directory)
+_project_root = Path(__file__).parent.parent
+load_dotenv(_project_root / ".env")
 
 # API Keys
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")

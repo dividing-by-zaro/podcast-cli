@@ -159,3 +159,15 @@ class TestConfigIntegration:
         # Directory should exist or be creatable
         OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
         assert OUTPUT_DIR.exists()
+
+    def test_elevenlabs_api_connection(self):
+        """Test that ElevenLabs API key is valid by checking subscription (free endpoint)."""
+        from src.tts_client import get_account_balance
+
+        # get_account_balance calls user.get_subscription() which is a free endpoint
+        # This verifies the API key is valid and properly formatted
+        balance = get_account_balance()
+
+        # Balance should be a non-negative number
+        assert isinstance(balance, (int, float))
+        assert balance >= 0
