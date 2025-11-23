@@ -8,6 +8,9 @@ from pydub import AudioSegment
 
 from .config import AUDIO_FORMAT, CHUNK_SIZE, OUTPUT_DIR
 
+# Path to the intro audio file
+INTRO_PATH = Path(__file__).parent.parent / "assets" / "intro.mp3"
+
 
 def chunk_text(text: str, chunk_size: int = CHUNK_SIZE) -> list[str]:
     """
@@ -120,3 +123,30 @@ def save_preview(audio_data: bytes, topic: str) -> Path:
     output_path = OUTPUT_DIR / filename
 
     return save_audio(audio_data, topic, output_path)
+
+
+def prepend_intro(audio_data: bytes) -> bytes:
+    """
+    Prepend the intro audio to the given audio data.
+
+    Args:
+        audio_data: The main audio data as bytes.
+
+    Returns:
+        Combined audio with intro prepended.
+    """
+    if not INTRO_PATH.exists():
+        print(f"Warning: Intro file not found at {INTRO_PATH}")
+        return audio_data
+
+    # Load intro and main audio
+    intro = AudioSegment.from_mp3(INTRO_PATH)
+    main_audio = AudioSegment.from_mp3(io.BytesIO(audio_data))
+
+    # Combine intro + main audio
+    combined = intro + main_audio
+
+    # Export to bytes
+    output_buffer = io.BytesIO()
+    combined.export(output_buffer, format=AUDIO_FORMAT)
+    return output_buffer.getvalue()

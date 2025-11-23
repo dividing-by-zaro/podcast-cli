@@ -124,6 +124,10 @@ def main():
         print("Concatenating audio segments...")
         final_audio = audio_utils.concatenate_audio(audio_segments)
 
+        # Step 8: Prepend intro
+        print("Adding intro...")
+        final_audio = audio_utils.prepend_intro(final_audio)
+
         output_path = audio_utils.save_audio(final_audio, args.topic, args.output)
         print(f"\n✓ Podcast saved to: {output_path}")
         sys.exit(0)
@@ -200,6 +204,10 @@ def main():
     # Step 7: Concatenate and save
     print("Concatenating audio segments...")
     final_audio = audio_utils.concatenate_audio(audio_segments)
+
+    # Step 8: Prepend intro
+    print("Adding intro...")
+    final_audio = audio_utils.prepend_intro(final_audio)
 
     output_path = audio_utils.save_audio(final_audio, args.topic, args.output)
     print(f"\n✓ Podcast saved to: {output_path}")
