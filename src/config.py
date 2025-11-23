@@ -14,8 +14,8 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
 
 # ElevenLabs settings
-ELEVENLABS_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # Rachel - change after testing in playground
-ELEVENLABS_MODEL_ID = "eleven_monolingual_v1"
+ELEVENLABS_VOICE_ID = "Aa6nEBJJMKJwJkCx8VU2"  # Quentin - Narrator and Educator
+ELEVENLABS_MODEL_ID = "eleven_turbo_v2_5"
 
 # Audio settings
 OUTPUT_DIR = Path(__file__).parent.parent / "output"

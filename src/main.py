@@ -26,6 +26,9 @@ def main():
         "--preview-only", action="store_true", help="Generate preview only"
     )
     parser.add_argument(
+        "--preview-chars", type=int, default=PREVIEW_CHAR_COUNT, help=f"Characters for preview (default: {PREVIEW_CHAR_COUNT})"
+    )
+    parser.add_argument(
         "--usage", action="store_true", help="Show usage report and exit"
     )
     parser.add_argument(
@@ -74,7 +77,9 @@ def main():
         # Skip to TTS generation (Step 4 onwards)
         # Step 4: Check ElevenLabs balance
         print("Checking ElevenLabs account balance...")
-        has_balance, required, available = tts_client.check_sufficient_balance(processed_text)
+        # For preview-only, only check balance for preview characters
+        text_to_check = processed_text[:args.preview_chars] if args.preview_only else processed_text
+        has_balance, required, available = tts_client.check_sufficient_balance(text_to_check)
         print(f"  Required: {required:,} characters")
         print(f"  Available: {available:,} characters")
 
@@ -85,9 +90,9 @@ def main():
 
         # Step 5: Generate preview
         if not args.auto:
-            print(f"\nGenerating {PREVIEW_CHAR_COUNT}-character preview...")
+            print(f"\nGenerating {args.preview_chars}-character preview...")
             preview_audio = tts_client.generate_preview(
-                processed_text, PREVIEW_CHAR_COUNT, context="production", topic=args.topic
+                processed_text, args.preview_chars, context="production", topic=args.topic
             )
             preview_path = audio_utils.save_preview(preview_audio, args.topic)
             print(f"✓ Preview saved to: {preview_path}")
@@ -162,9 +167,9 @@ def main():
 
     # Step 5: Generate preview
     if not args.auto:
-        print(f"\nGenerating {PREVIEW_CHAR_COUNT}-character preview...")
+        print(f"\nGenerating {args.preview_chars}-character preview...")
         preview_audio = tts_client.generate_preview(
-            processed_text, PREVIEW_CHAR_COUNT, context="production", topic=args.topic
+            processed_text, args.preview_chars, context="production", topic=args.topic
         )
         preview_path = audio_utils.save_preview(preview_audio, args.topic)
         print(f"✓ Preview saved to: {preview_path}")
