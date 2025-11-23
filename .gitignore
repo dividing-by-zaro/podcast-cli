@@ -30,6 +30,10 @@ wheels/
 output/*
 !output/.gitkeep
 
+# Logs (keep directory, ignore contents)
+logs/*
+!logs/.gitkeep
+
 # IDE
 .idea/
 .vscode/

@@ -6,13 +6,16 @@ from pathlib import Path
 
 from . import audio_utils, text_processor, tts_client, wikipedia_client
 from .config import PREVIEW_CHAR_COUNT
+from .usage_logger import print_usage_report
 
 
 def main():
     parser = argparse.ArgumentParser(
         description="Generate text-to-speech podcasts from Wikipedia articles"
     )
-    parser.add_argument("topic", help="Wikipedia page title (e.g., 'Cornbread')")
+    parser.add_argument(
+        "topic", nargs="?", help="Wikipedia page title (e.g., 'Cornbread')"
+    )
     parser.add_argument(
         "-o", "--output", type=Path, help="Output file path (default: auto-generated)"
     )
@@ -22,8 +25,20 @@ def main():
     parser.add_argument(
         "--preview-only", action="store_true", help="Generate preview only"
     )
+    parser.add_argument(
+        "--usage", action="store_true", help="Show usage report and exit"
+    )
 
     args = parser.parse_args()
+
+    # Handle usage report
+    if args.usage:
+        print_usage_report()
+        sys.exit(0)
+
+    # Validate topic is provided for generation
+    if not args.topic:
+        parser.error("topic is required for podcast generation")
 
     # Step 1: Check if Wikipedia page exists
     print(f"Checking Wikipedia for '{args.topic}'...")
@@ -39,7 +54,9 @@ def main():
 
     # Step 3: Preprocess with OpenAI
     print("Preprocessing text for TTS...")
-    processed_text = text_processor.preprocess_text(content)
+    processed_text = text_processor.preprocess_text(
+        content, context="production", topic=args.topic
+    )
     print(f"✓ Processed to {len(processed_text):,} characters")
 
     # Step 4: Check ElevenLabs balance
@@ -56,7 +73,9 @@ def main():
     # Step 5: Generate preview
     if not args.auto:
         print(f"\nGenerating {PREVIEW_CHAR_COUNT}-character preview...")
-        preview_audio = tts_client.generate_preview(processed_text, PREVIEW_CHAR_COUNT)
+        preview_audio = tts_client.generate_preview(
+            processed_text, PREVIEW_CHAR_COUNT, context="production", topic=args.topic
+        )
         preview_path = audio_utils.save_preview(preview_audio, args.topic)
         print(f"✓ Preview saved to: {preview_path}")
 
@@ -78,7 +97,9 @@ def main():
     audio_segments = []
     for i, chunk in enumerate(chunks, 1):
         print(f"  Processing chunk {i}/{len(chunks)}...")
-        audio = tts_client.generate_audio(chunk)
+        audio = tts_client.generate_audio(
+            chunk, context="production", topic=args.topic
+        )
         audio_segments.append(audio)
 
     # Step 7: Concatenate and save

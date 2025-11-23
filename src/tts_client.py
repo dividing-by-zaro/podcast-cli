@@ -3,6 +3,7 @@
 from elevenlabs import ElevenLabs
 
 from .config import ELEVENLABS_API_KEY, ELEVENLABS_MODEL_ID, ELEVENLABS_VOICE_ID
+from .usage_logger import log_elevenlabs_usage
 
 
 def get_elevenlabs_client() -> ElevenLabs:
@@ -50,13 +51,20 @@ def check_sufficient_balance(text: str) -> tuple[bool, int, int]:
     return available >= required, required, int(available)
 
 
-def generate_audio(text: str, voice_id: str | None = None) -> bytes:
+def generate_audio(
+    text: str,
+    voice_id: str | None = None,
+    context: str = "production",
+    topic: str | None = None,
+) -> bytes:
     """
     Generate audio from text using ElevenLabs TTS.
 
     Args:
         text: The text to convert to speech.
         voice_id: Optional voice ID override.
+        context: "production" or "test" for usage logging.
+        topic: Optional topic name for usage logging.
 
     Returns:
         The audio data as bytes.
@@ -72,16 +80,31 @@ def generate_audio(text: str, voice_id: str | None = None) -> bytes:
 
     # Convert generator to bytes
     audio_bytes = b"".join(audio)
+
+    # Log usage
+    log_elevenlabs_usage(
+        characters=len(text),
+        context=context,
+        topic=topic,
+    )
+
     return audio_bytes
 
 
-def generate_preview(text: str, char_count: int = 500) -> bytes:
+def generate_preview(
+    text: str,
+    char_count: int = 500,
+    context: str = "production",
+    topic: str | None = None,
+) -> bytes:
     """
     Generate a preview audio clip from the beginning of the text.
 
     Args:
         text: The full text.
         char_count: Number of characters for the preview.
+        context: "production" or "test" for usage logging.
+        topic: Optional topic name for usage logging.
 
     Returns:
         The preview audio data as bytes.
@@ -93,4 +116,4 @@ def generate_preview(text: str, char_count: int = 500) -> bytes:
     if last_period > char_count * 0.5:
         preview_text = preview_text[: last_period + 1]
 
-    return generate_audio(preview_text)
+    return generate_audio(preview_text, context=context, topic=topic)

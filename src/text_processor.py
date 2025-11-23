@@ -3,6 +3,7 @@
 from openai import OpenAI
 
 from .config import OPENAI_API_KEY
+from .usage_logger import log_openai_usage
 
 PREPROCESSING_PROMPT = """You are a text preprocessor optimizing content for text-to-speech.
 
@@ -23,7 +24,11 @@ def get_openai_client() -> OpenAI:
     return OpenAI(api_key=OPENAI_API_KEY)
 
 
-def preprocess_text(text: str) -> str:
+def preprocess_text(
+    text: str,
+    context: str = "production",
+    topic: str | None = None,
+) -> str:
     """
     Preprocess text for optimal text-to-speech output.
 
@@ -31,6 +36,8 @@ def preprocess_text(text: str) -> str:
 
     Args:
         text: The raw text to preprocess.
+        context: "production" or "test" for usage logging.
+        topic: Optional topic name for usage logging.
 
     Returns:
         The preprocessed text optimized for TTS.
@@ -45,6 +52,17 @@ def preprocess_text(text: str) -> str:
         ],
         temperature=0.3,
     )
+
+    # Log usage
+    usage = response.usage
+    if usage:
+        log_openai_usage(
+            input_tokens=usage.prompt_tokens,
+            output_tokens=usage.completion_tokens,
+            model="gpt-4o-mini",
+            context=context,
+            topic=topic,
+        )
 
     return response.choices[0].message.content
 
